@@ -90,6 +90,35 @@
     aggregationMethod = sum
      #+END_SRC
      而 ~storage-aggregation.conf~ 这个配置文件一般是位于 ~/opt/graphite/conf~
+ 
+     一切准备就绪之后，就可以运行爬虫了。
+     进入到 ~jd~ 目录下：
+     #+BEGIN_SRC sh
+       scrapy crawl jd
+     #+END_SRC
+** 注意事项
+   需要注意的是，本项目是含有两只爬虫，爬取商品评论需要先爬取商品信息，因为有了
+   商品信息才能爬取评论
+** 代理 IP
+   虽然不使用代理 IP 可以爬取商品信息，但是可能爬取一段时间后就无法爬取商品信息，
+   所以需要添加代理 IP. 以 http://ip:port 的形式保存到文本文件，每行一个 IP,然后
+   在 ~setting~ 中指定路径：
+   #+BEGIN_SRC python
+     PROXY_LIST = 'path/to/proxy_ip.txt'
+   #+END_SRC
+   并且去掉下面配置的注释：
+   #+BEGIN_SRC python
+     RETRY_TIMES = 10
+     RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+
+     DOWNLOADER_MIDDLEWARES = {
+	 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+	 'scrapy_proxies.RandomProxy': 100,
+	 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+     }
+     PROXY_MODE = 0
+   #+END_SRC
+
 * 运行截图
 ** graphite 监控
 
