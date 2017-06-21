@@ -1,5 +1,5 @@
 import pprint
-from socket import socket
+import socket
 from time import time
 
 import redis
@@ -23,13 +23,14 @@ class GraphiteClient(object):
 
     def __init__(self, host="127.0.0.1", port=2003):
         self.style = color.color_style()
-        self._sock = socket()
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.connect((host, port))
 
     def send(self, metric, value, timestamp=None):
         try:
-            self._sock.send("%s %g %s\n\n" %
-                            (metric, value, timestamp or int(time())))
+            message = "{} {} {}\n\n".format(
+                metric, value, timestamp or int(time()))
+            self._sock.sendall(message.encode())
         except Exception as err:
             self.style.ERROR("SocketError(GraphiteClient): " + str(err))
 
