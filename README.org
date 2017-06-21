@@ -136,3 +136,4 @@
   + [[https://github.com/noplay/scrapy-graphite]]
   + [[https://github.com/gnemoug/distribute_crawler]]
   + https://github.com/hopsoft/docker-graphite-statsd
+  + [[https://github.com/aivarsk/scrapy-proxies]]
