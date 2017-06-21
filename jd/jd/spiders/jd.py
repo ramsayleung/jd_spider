@@ -17,7 +17,6 @@ class JDSpider(scrapy.Spider):
     rotete_user_agent = True
 
     def __init__(self):
-        self.max_depth = 150
         self.price_url = "http://p.3.cn/prices/mgets?pduid={}&skuIds=J_{}"
         self.price_backup_url = "https://p.3.cn/prices/get?pduid={}&skuid=J_{}"
         self.jd_subdomain = ["jiadian", "shouji", "wt", "shuma", "diannao",
@@ -31,10 +30,6 @@ class JDSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        try:
-            depth = response.meta['depth']
-        except KeyError as err:
-            depth = 0
         links = response.xpath("//@href").extract()
         for link in links:
             self.logger.debug("link: %s", link)
@@ -48,9 +43,8 @@ class JDSpider(scrapy.Spider):
                 if subdomain in ["item"]:
                     yield scrapy.Request(url=link, callback=self.parse_item)
                 # 判断是否是 xxx.jd.com, 限制爬取范围在 jd.com
-                elif subdomain in self.jd_subdomain and depth < self.max_depth:
-                    yield scrapy.Request(url=link, callback=self.parse,
-                                         meta={'depth': depth + 1})
+                elif subdomain in self.jd_subdomain:
+                    yield scrapy.Request(url=link, callback=self.parse)
 
     def parse_item(self, response):
         parsed = urlparse(response.url)

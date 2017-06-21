@@ -74,7 +74,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'jd_comment.pipelines.MongoDBPipeline': 300,
+    'jd_comment.pipelines.MongoDBPipeline': 200,
     'scrapy_redis.pipelines.RedisPipeline': 300,
 }
 MONGODB_SERVER = "localhost"
@@ -107,3 +107,11 @@ SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 
 # # Ensure all spiders share same duplicates filter through redis.
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+STATS_CLASS = 'jd_comment.statscol.graphite.GraphiteStatsCollector'
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
+GRAPHITE_HOST = '127.0.0.1'
+GRAPHITE_PORT = 2003
+STATS_KEY = "scrapy:jd_comment:stats"
