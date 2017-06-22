@@ -1,6 +1,3 @@
-详情可查看博客：
-[[https://samrayleung.github.io/blog/2017/06/21/%25E4%25BB%258E%25E4%25BA%25AC%25E4%25B8%259C%25E7%25AA%2583%25E5%258F%2596150+%25E4%25B8%2587%25E6%259D%25A1%25E6%2595%25B0%25E6%258D%25AE/]]
-
 
 使用 scrapy, scrapy-redis, graphite 实现的京东分布式爬虫，以 mongodb 实现底层存储。分布式
 实现，解决带宽和性能的瓶颈，提高爬取的效率。实现 scrapy-redis 对进行 url 的去重
