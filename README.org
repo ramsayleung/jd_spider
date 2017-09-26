@@ -93,7 +93,7 @@
      一切准备就绪之后，就可以运行爬虫了。
      进入到 ~jd~ 目录下：
      #+BEGIN_SRC sh
-       scrapy crawl jd
+       scrapy crawl jindong
      #+END_SRC
 ** 注意事项
    需要注意的是，本项目是含有两只爬虫，爬取商品评论需要先爬取商品信息，因为有了
