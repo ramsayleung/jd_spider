@@ -130,7 +130,10 @@
    [[./images/jd_comment_summary.png]]
 ** 商品信息
    [[./images/jd_parameters.png]]
-
+** Todo
+  + 优化去重策略
+  + 优化爬取策略
+  + 增加新的解析策略，解决[issue](https://github.com/samrayleung/jd_spider/issues/10)
 * 参考及致谢
   + [[https://github.com/noplay/scrapy-graphite]]
   + [[https://github.com/gnemoug/distribute_crawler]]
