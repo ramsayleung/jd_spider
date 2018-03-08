@@ -5,6 +5,8 @@ import uuid
 from urllib.parse import urlparse
 
 import scrapy
+from scrapy import signals
+from scrapy.xlib.pydispatch import dispatcher
 
 from jd.items import ParameterItem
 from jd.spiders.exception import ParseNotSupportedError
@@ -17,7 +19,8 @@ class JDSpider(scrapy.Spider):
     rotete_user_agent = True
 
     def __init__(self):
-        self.price_url = "http://p.3.cn/prices/mgets?pduid={}&skuIds=J_{}"
+        dispatcher.connect(self.spider_closed, signals.spider_closed)
+        self.price_url = "https://p.3.cn/prices/mgets?pduid={}&skuIds=J_{}"
         self.price_backup_url = "https://p.3.cn/prices/get?pduid={}&skuid=J_{}"
         self.jd_subdomain = ["jiadian", "shouji", "wt", "shuma", "diannao",
                              "bg", "channel", "jipiao", "hotel", "trip",
@@ -47,6 +50,8 @@ class JDSpider(scrapy.Spider):
                     yield scrapy.Request(url=link, callback=self.parse)
 
     def parse_item(self, response):
+        if not response.text or response.text == "":
+            return
         parsed = urlparse(response.url)
         item = ParameterItem()
         # 获取 sku_id, URL: http://item.jd.com/4297772.html 的 sku_id 就是 4297772
@@ -147,3 +152,6 @@ class JDSpider(scrapy.Spider):
             logging.info("It's not a book item, parse failed. referer: {}, url: {}"
                          .format(referer, response.url))
             raise ParseNotSupportedError(response.url)
+
+    # 在关闭爬虫的之前，保存资源
+    def spider_closed(self, spider):

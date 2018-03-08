@@ -6,6 +6,13 @@
 * 爬取策略
   获取 ~<a href>~ 标签里面的 url 值，然后迭代爬取，并且把 url 限定在
   ~xxx.jd.com~ 范围内，防止无限广度的问题。
+* 去重策略
+  使用 `scrapy_redis.dupefilter.RFPDupeFilter` 实现去重，请求入队列的逻辑－
+  [[https://github.com/rmax/scrapy-redis/blob/31c022dd145654cb4ea1429f09852a82afa0a01c/src/scrapy_redis/scheduler.py#L153][enqueue_request]],
+  而具体的去重逻辑是调用
+  [[https://github.com/scrapy/scrapy/blob/acd2b8d43b5ebec7ffd364b6f335427041a0b98d/scrapy/utils/request.py#L19][scrapy.utils.request.request.fingerprint]]
+* 商品去重
+  
 * 反反爬虫策略
 ** 禁用 cookie
    通过禁用 cookie, 服务器就无法根据 cookie 判断出爬虫是否访问过网站
