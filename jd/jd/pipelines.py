@@ -6,12 +6,13 @@ import logging
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import pymongo
+import os
 # Define your item pipelines here
 #
 from scrapy.conf import settings
 from scrapy.exceptions import DropItem
 
-from pybloom import ScalableBloomFilter
+from pybloom_live import ScalableBloomFilter
 
 
 # sbf = ScalableBloomFilter(mode=ScalableBloomFilter.SMALL_SET_GROWTH)
