@@ -139,9 +139,12 @@
 ** 商品信息
    [[./images/jd_parameters.png]]
 ** Todo
-  + 优化去重策略 [[https://github.com/samrayleung/jd_spider/issues/6][爬取重复商品]]
-  + 优化爬取策略
-  + 增加新的解析策略，解决 [[https://github.com/samrayleung/jd_spider/issues/10][parse book item error]]
+** DONE 优化商品去重策略
+   CLOSED: [2018-03-09 Fri 21:16]
+   Issue:解决 [[https://github.com/samrayleung/jd_spider/issues/6][爬取重复商品]]
+** TODO 优化爬取策略
+** TODO 增加新的解析策略
+   Issue: 解决 [[https://github.com/samrayleung/jd_spider/issues/10][parse book item error]]
 * 参考及致谢
   + [[https://github.com/noplay/scrapy-graphite]]
   + [[https://github.com/gnemoug/distribute_crawler]]
