@@ -33,13 +33,12 @@ class MongoDBPipeline(object):
                 raise DropItem("Missing {0}!".format(data))
         if valid:
             try:
-                field_name = item['sku_id'] + ' ' + item['item_name']
                 # This returns the number of values added, zero if already exists.
-                sku_id = item['sku_id']
+                key = "good_filter_" + item['sku_id']
                 item_name = item['item_name']
-                if self.server.get(sku_id) is None:
-                    self.server.set(sku_id, item_name)
-                    self.db[field_name].insert(dict(item))
+                if self.server.get(key) is None:
+                    self.server.set(key, item_name)
+                    self.db[item_name].insert(dict(item))
                     logging.debug("add {}".format(item['item_name']))
             except (pymongo.errors.WriteError, KeyError) as err:
                 raise DropItem("Duplicated Item: {}".format(item['name']))
