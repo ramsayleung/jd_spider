@@ -133,6 +133,10 @@ DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 
 # DEPTH_LIMIT = 1
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB="jd_good_filter"
+
 STATS_CLASS = 'jd.statscol.graphite.RedisGraphiteStatsCollector'
 GRAPHITE_HOST = '127.0.0.1'
 GRAPHITE_PORT = 2003

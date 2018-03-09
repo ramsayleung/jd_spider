@@ -5,11 +5,9 @@ import uuid
 from urllib.parse import urlparse
 
 import scrapy
-from scrapy import Spider, signals
+from scrapy import Spider
 
 from jd.items import ParameterItem
-from jd.pipelines import save_bloom_filter
-from jd.spiders.exception import ParseNotSupportedError
 
 logger = logging.getLogger('jindong')
 
@@ -18,17 +16,7 @@ class JDSpider(scrapy.Spider):
     name = "jindong"
     rotete_user_agent = True
 
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(JDSpider, cls).from_crawler(crawler, *args, **kwargs)
-        crawler.signals.connect(spider.spider_closed,
-                                signal=signals.spider_closed)
-        return spider
-
     # 在关闭爬虫的之前，保存资源
-    def spider_closed(self, spider):
-        spider.logger.info('Spider closed: %s', spider.name)
-        save_bloom_filter()
 
     def __init__(self):
         self.price_url = "https://p.3.cn/prices/mgets?pduid={}&skuIds=J_{}"
@@ -114,7 +102,7 @@ class JDSpider(scrapy.Spider):
             price = json.loads(response.text)
             item['price'] = price[0].get("p")
         except KeyError as err:
-            if price['error']=='pdos_captcha':
+            if price['error'] == 'pdos_captcha':
                 logging.error("触发验证码")
             logging.warn("Price parse error, parse is {}".format(price))
         except json.decoder.JSONDecodeError as err:

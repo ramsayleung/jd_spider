@@ -111,6 +111,7 @@ STATS_CLASS = 'jd_comment.statscol.graphite.RedisGraphiteStatsCollector'
 
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
+REDIS_DB="jd_good_filter"
 
 GRAPHITE_HOST = '127.0.0.1'
 GRAPHITE_PORT = 2003
