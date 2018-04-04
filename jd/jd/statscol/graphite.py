@@ -3,11 +3,13 @@ import socket
 from time import time
 
 import redis
+import logging
 from scrapy import log
 from scrapy.statscol import StatsCollector
 
 from jd.utils import color
 
+logger = logging.getLogger('jindong')
 # default values
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
@@ -22,9 +24,12 @@ class GraphiteClient(object):
     """
 
     def __init__(self, host="127.0.0.1", port=2003):
-        self.style = color.color_style()
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.connect((host, port))
+        try:
+            self.style = color.color_style()
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._sock.connect((host, port))
+        except(ConnectionRefusedError):
+            logger.warning("could not connect to graphite")
 
     def send(self, metric, value, timestamp=None):
         try:
@@ -209,12 +214,14 @@ class RedisGraphiteStatsCollector(RedisStatsCollector):
 
     def __init__(self, crawler):
         super(RedisGraphiteStatsCollector, self).__init__(crawler)
-
-        host = crawler.settings.get("GRAPHITE_HOST", self.GRAPHITE_HOST)
-        port = crawler.settings.get("GRAPHITE_PORT", self.GRAPHITE_PORT)
-        self.ignore_keys = crawler.settings.get(
-            "GRAPHITE_IGNOREKEYS", self.GRAPHITE_IGNOREKEYS)
-        self._graphiteclient = GraphiteClient(host, port)
+        try:
+            host = crawler.settings.get("GRAPHITE_HOST", self.GRAPHITE_HOST)
+            port = crawler.settings.get("GRAPHITE_PORT", self.GRAPHITE_PORT)
+            self.ignore_keys = crawler.settings.get(
+                "GRAPHITE_IGNOREKEYS", self.GRAPHITE_IGNOREKEYS)
+            self._graphiteclient = GraphiteClient(host, port)
+        except(ConnectionRefusedError):
+            logger.warning("could not connect to graphite")
 
     def _get_stats_key(self, spider, key):
         if spider is not None:

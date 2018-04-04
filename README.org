@@ -45,7 +45,7 @@
   + scrapy
   + scrapy-redis
   + pymongo
-  + graphite
+  + graphite (可选)
 * 如何运行
   #+BEGIN_SRC  sh
     git clone  https://github.com/samrayleung/jd_spider.git 
@@ -54,55 +54,56 @@
   #+BEGIN_SRC sh
     (sudo) pip install -r requirements.txt
   #+END_SRC
-** docker 安装
-   安装配置 graphite. 需要注意的是 graphite 只适用于 Linux 平台，且安装过程非常
-   麻烦，所以强烈建议使用 docker 进行安装。我基于 [[https://github.com/hopsoft/docker-graphite-statsd][docker-graphite-statsd]] 这个
-   graphite 的镜像作了些许配置文件的修改，以适配 scrapy. 运行以下命令以拉取并运
-   行 image
-   #+BEGIN_SRC sh
-     sudo docker run -d\
-	  --name graphite\
-	  --restart=always\
-	  -p 80:80\
-	  -p 2003-2004:2003-2004\
-	  -p 2023-2024:2023-2024\
-	  -p 8125:8125/udp\
-	  -p 8126:8126\
-	  samrayleung/graphite-statsd
-   #+END_SRC
-   然后就可以在浏览器打开：
-   [[http://localhost/dashboard][dashboard]]
-   或者是登录到管理界面：
-   [[http://localhost/account/login]]
-   默认帐号密码是：
-   + username: root
-   + password: root
-** 手动安装
-   当然，你也可以自己配置 graphite, 在成功配置 graphite 之后，需要修改一些配置：
-   + 把 ~/opt/graphite/webapp/content/js/composer_widgets.js~ 文件中
-     ~toggleAutoRefresh~ 函数里的 ~interval~ 变量从60改为1。
-   + 在配置文件 ~storage-aggregation.conf~ 里添加：
-     #+BEGIN_SRC 
-     [scrapy_min]
-    pattern = ^scrapy\..*_min$
-    xFilesFactor = 0.1
-    aggregationMethod = min
-    [scrapy_max]
-    pattern = ^scrapy\..*_max$
-    xFilesFactor = 0.1
-    aggregationMethod = max
-    [scrapy_sum]
-    pattern = ^scrapy\..*_count$
-    xFilesFactor = 0.1
-    aggregationMethod = sum
-     #+END_SRC
-     而 ~storage-aggregation.conf~ 这个配置文件一般是位于 ~/opt/graphite/conf~
- 
-     一切准备就绪之后，就可以运行爬虫了。
-     进入到 ~jd~ 目录下：
-     #+BEGIN_SRC sh
-       scrapy crawl jindong
-     #+END_SRC
+** 安装Graphite(可选)
+*** docker 安装
+    安装配置 graphite. 需要注意的是 graphite 只适用于 Linux 平台，且安装过程非常
+    麻烦，所以强烈建议使用 docker 进行安装。我基于 [[https://github.com/hopsoft/docker-graphite-statsd][docker-graphite-statsd]] 这个
+    graphite 的镜像作了些许配置文件的修改，以适配 scrapy. 运行以下命令以拉取并运
+    行 image
+    #+BEGIN_SRC sh
+      sudo docker run -d\
+	   --name graphite\
+	   --restart=always\
+	   -p 80:80\
+	   -p 2003-2004:2003-2004\
+	   -p 2023-2024:2023-2024\
+	   -p 8125:8125/udp\
+	   -p 8126:8126\
+	   samrayleung/graphite-statsd
+    #+END_SRC
+    然后就可以在浏览器打开：
+    [[http://localhost/dashboard][dashboard]]
+    或者是登录到管理界面：
+    [[http://localhost/account/login]]
+    默认帐号密码是：
+    + username: root
+    + password: root
+*** 手动安装
+    当然，你也可以自己配置 graphite, 在成功配置 graphite 之后，需要修改一些配置：
+    + 把 ~/opt/graphite/webapp/content/js/composer_widgets.js~ 文件中
+      ~toggleAutoRefresh~ 函数里的 ~interval~ 变量从60改为1。
+    + 在配置文件 ~storage-aggregation.conf~ 里添加：
+      #+BEGIN_SRC 
+      [scrapy_min]
+     pattern = ^scrapy\..*_min$
+     xFilesFactor = 0.1
+     aggregationMethod = min
+     [scrapy_max]
+     pattern = ^scrapy\..*_max$
+     xFilesFactor = 0.1
+     aggregationMethod = max
+     [scrapy_sum]
+     pattern = ^scrapy\..*_count$
+     xFilesFactor = 0.1
+     aggregationMethod = sum
+      #+END_SRC
+      而 ~storage-aggregation.conf~ 这个配置文件一般是位于 ~/opt/graphite/conf~
+** 运行
+    一切准备就绪之后，就可以运行爬虫了。
+    进入到 ~jd~ 目录下：
+    #+BEGIN_SRC sh
+      scrapy crawl jindong
+    #+END_SRC
 ** 注意事项
    需要注意的是，本项目是含有两只爬虫，爬取商品评论需要先爬取商品信息，因为有了
    商品信息才能爬取评论

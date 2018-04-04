@@ -11,6 +11,7 @@ from scrapy.statscollectors import StatsCollector
 # from jd.utils import color
 from jd_comment.utils import color
 
+logger = logging.getLogger('jindong')
 # default values
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
@@ -25,9 +26,12 @@ class GraphiteClient(object):
     """
 
     def __init__(self, host="127.0.0.1", port=2003):
-        self.style = color.color_style()
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.connect((host, port))
+        try:
+            self.style = color.color_style()
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._sock.connect((host, port))
+        except(ConnectionRefusedError):
+            logger.warning("could not connect to graphite")
 
     def send(self, metric, value, timestamp=None):
         try:
