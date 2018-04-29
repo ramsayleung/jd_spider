@@ -5,13 +5,14 @@ import uuid
 from urllib.parse import urlparse
 
 import scrapy
+from exception import ParseNotSupportedError
 from jd.items import ParameterItem
 from scrapy import Spider
 
 logger = logging.getLogger('jindong')
 
 
-class JDSpider(scrapy.Spider):
+class JDSpider(Spider):
     name = "jindong"
     rotete_user_agent = True
 
@@ -108,20 +109,21 @@ class JDSpider(scrapy.Spider):
         """获取同一样商品的不同规格的商品
         https://github.com/samrayleung/jd_spider/issues/14
         """
-        choose_attrs = response.xpath('//*[@id="choose-attrs"]').extract()
-        attrs_num = len(choose_attrs)
         sku_ids = []
-        for index in attrs_num:
+        # 猜测规格的数量
+        for index in range(50):
             attribute = response.xpath(
-                '//*[@id="choose-attr-{}"]'.format(index+1)).extract()
-            for sku_item in attribute:
-                sku_id = attribute['[//dd@data-sku]']
-                sku_ids.append(sku_id)
+                '//*[@id="choose-attr-{}"]'.format(index+1))
+            # 如果为空，说明就只有 index 种规格
+            if attribute:
+                for sku_item in attribute:
+                    sku_id = sku_item.xpath("//@data-sku")
+                    sku_ids.append(sku_id)
         return sku_ids
 
-        pass
-
     def parse_price(self, response):
+        """获取商品价格
+        """
         item = response.meta['item']
         try:
             price = json.loads(response.text)
@@ -139,6 +141,8 @@ class JDSpider(scrapy.Spider):
         yield item
 
     def parse_global_shopping(self, response):
+        """解析全球购，全球购页面有点特别
+        """
         try:
             details2 = []
             brand = {}
