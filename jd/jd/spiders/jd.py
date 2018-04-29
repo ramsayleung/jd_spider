@@ -1,8 +1,15 @@
+#!/usr/bin/env python3
+# # -*- coding: utf-8 -*-
+# author:Samray <samrayleung@gmail.com>
+
 import json
 import logging
 import random
 import uuid
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+     from urlparse import urlparse
 
 import scrapy
 from exception import ParseNotSupportedError

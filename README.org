@@ -4,8 +4,9 @@
 以及调度，利用redis的高效和易于扩展能够轻松实现高效率下载：当redis存储或者访问速
 度遇到瓶颈时，可以通过增大redis集群数和爬虫集群数量改善
 * 爬取策略
-  获取 ~<a href>~ 标签里面的 url 值，然后迭代爬取，并且把 url 限定在
-  ~xxx.jd.com~ 范围内，防止无限广度的问题。
+  获取 ~<a href>~ 标签里面的 url 值，然后迭代爬取，并且把 url 限定在~xxx.jd.com~
+  范围内，防止无限广度的问题。在爬取某个页面的商品的时候，会把同一个商品的不同
+  规格爬取下来，例如32GIPhone,64GIPhone, 126GIPhone 等。
 * 请求去重策略
   使用 `scrapy_redis.dupefilter.RFPDupeFilter` 实现去重，请求入队列的逻辑－
   [[https://github.com/rmax/scrapy-redis/blob/31c022dd145654cb4ea1429f09852a82afa0a01c/src/scrapy_redis/scheduler.py#L153][enqueue_request]],
