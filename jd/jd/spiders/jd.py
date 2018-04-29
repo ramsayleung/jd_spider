@@ -5,9 +5,8 @@ import uuid
 from urllib.parse import urlparse
 
 import scrapy
-from scrapy import Spider
-
 from jd.items import ParameterItem
+from scrapy import Spider
 
 logger = logging.getLogger('jindong')
 
@@ -41,14 +40,23 @@ class JDSpider(scrapy.Spider):
                     link = "http:" + link
                 self.logger.debug("url: %s", url)
                 subdomain = url.hostname.split(".")[0]
-                # 如果这是一个商品，获取商品详情
+                # 如果是商品页，获取所有的不同规格的同一个商品
                 if subdomain in ["item"]:
-                    yield scrapy.Request(url=link, callback=self.parse_item)
+                    item_urls = []
+                    item_urls.append(link)
+                    for sku_id in self.parse_skus(self, response):
+                        item_url = "https://item.jd.com/{}.html".format(sku_id)
+                        item_urls.append(item_url)
+                # 如果这是一个商品，获取商品详情
+                    for url in item_urls:
+                        yield scrapy.Request(url=url, callback=self.parse_item)
                 # 判断是否是 xxx.jd.com, 限制爬取范围在 jd.com
                 elif subdomain in self.jd_subdomain:
                     yield scrapy.Request(url=link, callback=self.parse)
 
     def parse_item(self, response):
+        """解析爬取的商品页详情
+        """
         if not response.text or response.text == "":
             return
         parsed = urlparse(response.url)
@@ -95,6 +103,23 @@ class JDSpider(scrapy.Spider):
         yield scrapy.Request(url=self.price_url.format(random.randint(1, 100000000), item['sku_id']),
                              callback=self.parse_price,
                              meta={'item': item})
+
+    def parse_skus(self, response):
+        """获取同一样商品的不同规格的商品
+        https://github.com/samrayleung/jd_spider/issues/14
+        """
+        choose_attrs = response.xpath('//*[@id="choose-attrs"]').extract()
+        attrs_num = len(choose_attrs)
+        sku_ids = []
+        for index in attrs_num:
+            attribute = response.xpath(
+                '//*[@id="choose-attr-{}"]'.format(index+1)).extract()
+            for sku_item in attribute:
+                sku_id = attribute['[//dd@data-sku]']
+                sku_ids.append(sku_id)
+        return sku_ids
+
+        pass
 
     def parse_price(self, response):
         item = response.meta['item']
