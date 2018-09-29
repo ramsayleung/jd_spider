@@ -6,12 +6,12 @@ import logging
 import uuid
 
 import scrapy
-
 from jd_comment.db import init_mongodb
 from jd_comment.items import CommentItem, CommentSummaryItem
+from scrapy_redis.spiders import RedisSpider
 
 
-class JDCommentSpider(scrapy.Spider):
+class JDCommentSpider(RedisSpider):
     name = 'jd_comment'
 
     def __init__(self):

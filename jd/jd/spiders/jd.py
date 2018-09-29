@@ -6,20 +6,23 @@ import json
 import logging
 import random
 import uuid
+
+import scrapy
+from scrapy_redis.spiders import RedisSpider
+
+from ..items import ParameterItem
+from .exception import ParseNotSupportedError
+
 try:
     from urllib.parse import urlparse
 except ImportError:
-     from urlparse import urlparse
+    from urlparse import urlparse
 
-import scrapy
-from exception import ParseNotSupportedError
-from jd.items import ParameterItem
-from scrapy import Spider
 
 logger = logging.getLogger('jindong')
 
 
-class JDSpider(Spider):
+class JDSpider(RedisSpider):
     name = "jindong"
     rotete_user_agent = True
 
@@ -118,7 +121,7 @@ class JDSpider(Spider):
         """
         sku_ids = []
         # 猜测规格的数量
-        for index in range(50):
+        for index in range(100):
             attribute = response.xpath(
                 '//*[@id="choose-attr-{}"]'.format(index+1))
             # 如果为空，说明就只有 index 种规格
