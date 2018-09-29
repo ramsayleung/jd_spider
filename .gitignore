@@ -3,3 +3,4 @@ jd/jd/venv/
 jd/venv
 jd_comment/jd_comment/venv/
 *cache*
+Pipfile.lock

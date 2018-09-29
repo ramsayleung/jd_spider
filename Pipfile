@@ -1,0 +1,41 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+
+[packages]
+aiohttp = "==1.2.0"
+"asn1crypto" = "==0.22.0"
+attrs = "==17.2.0"
+cffi = "==1.10.0"
+constantly = "==15.1.0"
+cryptography = "==2.3.1"
+cssselect = "==1.0.1"
+hyperlink = "==17.2.0"
+idna = "==2.5"
+incremental = "==17.5.0"
+lxml = "==3.8.0"
+parsel = "==1.2.0"
+"pyasn1" = "==0.2.3"
+"pyasn1-modules" = "==0.0.9"
+pycparser = "==2.17"
+pymongo = "==3.4.0"
+queuelib = "==1.4.2"
+redis = "==2.10.5"
+scrapy-proxies = "==0.3"
+scrapy-redis = "==0.6.8"
+six = "==1.10.0"
+"w3lib" = "==1.17.0"
+"zope.interface" = "==4.4.2"
+Automat = "==0.6.0"
+Twisted = "==17.5.0"
+pyOpenSSL = "==17.0.0"
+Scrapy = "==1.4.0"
+service_identity = "==17.0.0"
+async_timeout = "==1.1.0"
+PyDispatcher = "==2.0.5"
+
+[requires]
+python_version = "3.6"

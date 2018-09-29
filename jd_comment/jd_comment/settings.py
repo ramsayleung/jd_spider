@@ -9,6 +9,10 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
+import logging
+import sys
+
+logger = logging.getLogger('jindong')
 BOT_NAME = 'jd_comment'
 
 SPIDER_MODULES = ['jd_comment.spiders']
@@ -107,12 +111,20 @@ SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 
 # # Ensure all spiders share same duplicates filter through redis.
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
-STATS_CLASS = 'jd_comment.statscol.graphite.RedisGraphiteStatsCollector'
 
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
-REDIS_DB="jd_good_filter"
+REDIS_DB = "jd_good_filter"
 
-GRAPHITE_HOST = '127.0.0.1'
-GRAPHITE_PORT = 2003
-STATS_KEY = "scrapy:jd_comment:stats"
+ENABLE_GRAPHITE = False
+
+IS_PYTHON3 = False
+if sys.version_info[0] < 3:
+    IS_PYTHON3 = True
+logger.debug("Python version: %s", sys.version_info)
+
+if ENABLE_GRAPHITE and IS_PYTHON3:
+    STATS_CLASS = 'jd_comment.statscol.graphite.RedisGraphiteStatsCollector'
+    GRAPHITE_HOST = '127.0.0.1'
+    GRAPHITE_PORT = 2003
+    STATS_KEY = "scrapy:jd_comment:stats"

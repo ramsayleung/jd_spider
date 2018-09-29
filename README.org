@@ -3,9 +3,12 @@
 实现，解决带宽和性能的瓶颈，提高爬取的效率。实现 scrapy-redis 对进行 url 的去重
 以及调度，利用redis的高效和易于扩展能够轻松实现高效率下载：当redis存储或者访问速
 度遇到瓶颈时，可以通过增大redis集群数和爬虫集群数量改善
+* 版本支持 
+  现在支持Py2 和 Py3, 但是需要注意的是，为了兼容Py2, 默认不开启Graphite, 如果需要开启的话，需要Py3 并且修改 settings.py 的 ~ENABLE_GRAPHITE~ 字段，默认为False
 * 爬取策略
-  获取 ~<a href>~ 标签里面的 url 值，然后迭代爬取，并且把 url 限定在
-  ~xxx.jd.com~ 范围内，防止无限广度的问题。
+  获取 ~<a href>~ 标签里面的 url 值，然后迭代爬取，并且把 url 限定在~xxx.jd.com~
+  范围内，防止无限广度的问题。在爬取某个页面的商品的时候，会把同一个商品的不同
+  规格爬取下来，例如32GIPhone,64GIPhone, 126GIPhone 等。
 * 请求去重策略
   使用 `scrapy_redis.dupefilter.RFPDupeFilter` 实现去重，请求入队列的逻辑－
   [[https://github.com/rmax/scrapy-redis/blob/31c022dd145654cb4ea1429f09852a82afa0a01c/src/scrapy_redis/scheduler.py#L153][enqueue_request]],
@@ -146,6 +149,17 @@
 ** Todo 优化爬取策略
 ** Todo 增加新的解析策略
    Issue: 解决 [[https://github.com/samrayleung/jd_spider/issues/10][parse book item error]]
+* ChangeLog
+** 2018-9-30
+    + 新增 Pipenv 支持
+    + 增加 py2 支持
+    + 默认不开启 Graphite
+    + 将爬虫修改回继承 ~RedisSpider~
+    + 修复Github 提示的可能存在漏洞的包
+    + 感觉JD 的反爬虫策略明显加强，尝试爬了一会，很快被封IP
+    + 这个应该最后一次Update, 不会再投入精力到这个爬虫项目了
+** 2018-4-4
+   + 将 Graphite 修改为可选项
 * 参考及致谢
   + [[https://github.com/noplay/scrapy-graphite]]
   + [[https://github.com/gnemoug/distribute_crawler]]

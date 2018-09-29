@@ -1,18 +1,28 @@
+#!/usr/bin/env python3
+# # -*- coding: utf-8 -*-
+# author:Samray <samrayleung@gmail.com>
+
 import json
 import logging
 import random
 import uuid
-from urllib.parse import urlparse
 
 import scrapy
-from scrapy import Spider
+from scrapy_redis.spiders import RedisSpider
 
-from jd.items import ParameterItem
+from ..items import ParameterItem
+from .exception import ParseNotSupportedError
+
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
 
 logger = logging.getLogger('jindong')
 
 
-class JDSpider(scrapy.Spider):
+class JDSpider(RedisSpider):
     name = "jindong"
     rotete_user_agent = True
 
@@ -41,14 +51,23 @@ class JDSpider(scrapy.Spider):
                     link = "http:" + link
                 self.logger.debug("url: %s", url)
                 subdomain = url.hostname.split(".")[0]
-                # 如果这是一个商品，获取商品详情
+                # 如果是商品页，获取所有的不同规格的同一个商品
                 if subdomain in ["item"]:
-                    yield scrapy.Request(url=link, callback=self.parse_item)
+                    item_urls = []
+                    item_urls.append(link)
+                    for sku_id in self.parse_skus(self, response):
+                        item_url = "https://item.jd.com/{}.html".format(sku_id)
+                        item_urls.append(item_url)
+                # 如果这是一个商品，获取商品详情
+                    for url in item_urls:
+                        yield scrapy.Request(url=url, callback=self.parse_item)
                 # 判断是否是 xxx.jd.com, 限制爬取范围在 jd.com
                 elif subdomain in self.jd_subdomain:
                     yield scrapy.Request(url=link, callback=self.parse)
 
     def parse_item(self, response):
+        """解析爬取的商品页详情
+        """
         if not response.text or response.text == "":
             return
         parsed = urlparse(response.url)
@@ -96,7 +115,25 @@ class JDSpider(scrapy.Spider):
                              callback=self.parse_price,
                              meta={'item': item})
 
+    def parse_skus(self, response):
+        """获取同一样商品的不同规格的商品
+        https://github.com/samrayleung/jd_spider/issues/14
+        """
+        sku_ids = []
+        # 猜测规格的数量
+        for index in range(100):
+            attribute = response.xpath(
+                '//*[@id="choose-attr-{}"]'.format(index+1))
+            # 如果为空，说明就只有 index 种规格
+            if attribute:
+                for sku_item in attribute:
+                    sku_id = sku_item.xpath("//@data-sku")
+                    sku_ids.append(sku_id)
+        return sku_ids
+
     def parse_price(self, response):
+        """获取商品价格
+        """
         item = response.meta['item']
         try:
             price = json.loads(response.text)
@@ -114,6 +151,8 @@ class JDSpider(scrapy.Spider):
         yield item
 
     def parse_global_shopping(self, response):
+        """解析全球购，全球购页面有点特别
+        """
         try:
             details2 = []
             brand = {}
